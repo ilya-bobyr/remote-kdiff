@@ -24,7 +24,7 @@ EOM
 fi
 
 debug=
-if [[ $# -gt 0 && "$2" = "--debug" ]]; then
+if [[ $# -gt 0 && "$1" = "--debug" ]]; then
   debug=yes
   shift
   set -o xtrace
