@@ -25,9 +25,15 @@ responses=$( mktemp --dry-run "$fifoDir"/responses.XXXXX )
 mkfifo "$responses"
 
 cleanup() {
-  rm -f "$requests" >/dev/null 2>&1
-  rm -f "$responses" >/dev/null 2>&1
-  rm -d "$fifoDir" >/dev/null 2>&1
+  if [[ -n "$requests" && -e "$requests" ]]; then
+    rm -f "$requests" >/dev/null 2>&1
+  fi
+  if [[ -n "$responses" && -e "$responses" ]]; then
+    rm -f "$responses" >/dev/null 2>&1
+  fi
+  if [[ -n "$fifoDir" && -e "$fifoDir" ]]; then
+    rm -d "$fifoDir" >/dev/null 2>&1
+  fi
 }
 trap cleanup EXIT
 

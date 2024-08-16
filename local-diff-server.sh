@@ -70,10 +70,16 @@ cleanup() {
     wait -f "$sshPid"
   fi
 
-  ssh "$target" "rm -rf '$remoteDiffDir' >/dev/null 2>&1"
-  ssh "$target" "rm -f '$remoteDiff' >/dev/null 2>&1"
+  if [[ -n "$remoteDiffDir" ]]; then
+    ssh "$target" "rm -rf '$remoteDiffDir' >/dev/null 2>&1"
+  fi
+  if [[ -n "$remoteDiff" ]]; then
+    ssh "$target" "rm -f '$remoteDiff' >/dev/null 2>&1"
+  fi
 
-  rm -rf "$scratchDir" >/dev/null 2>&1
+  if [[ -n "$scratchDir" ]]; then
+    rm -rf "$scratchDir" >/dev/null 2>&1
+  fi
 
   echo "  ... cleanup done"
 }
