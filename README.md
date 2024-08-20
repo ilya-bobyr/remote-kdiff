@@ -5,6 +5,10 @@ machine.  X11 forwarding is horribly slow, especially on a high resolution
 screen.  So, instead, I want to run kdiff3 locally, but update original files
 and push the exit code back to the remote machine.
 
+Make sure that you are using `ControlMaster`, `ControlPath` and `ControlPersist`
+in your `.ssh/config` for the remote connection.  As the scripts are not really
+optimized for the ssh connection usage and open a lot of connections.
+
 ## One time setup
 
 ### git config
@@ -52,5 +56,8 @@ Make sure `kdiff3` is installed and can be invoked as `kdiff3`.
 
 ## TODO
 
- * Use a control connection for ssh.  It should speed up kdiff3 startup time by
-   seconds.  And will make the initial setup noticeably faster.
+ * Would it make sense for the script to just always use a dedicated control
+   connection for ssh.  Rather than both sharing it with the default
+   configuration and requiring a default configuration?
+
+ * Add Nix configuration.
