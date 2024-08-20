@@ -110,7 +110,25 @@ setupRemoteServer() {
 
   exec 3<"$fromRemote"
 
-  read -r -u 3 -t 3 remoteRequests
+  local waitForMax=10
+  local waitFor=$waitForMax
+  while true; do
+    if read -r -u 3 -t 3 remoteRequests; then
+      break
+    fi
+
+    if [[ "$waitFor" -lt 1 ]]; then
+      cat >&2 <<EOM
+ERROR: Remote server did open the output channel in $waitForMax seconds.
+EOM
+    exit 1
+    fi
+
+    echo "  waiting for the server to start [${waitFor}s left maximum]"
+    waitFor=$(( waitFor - 1 ))
+    sleep 1s
+  done
+
   if [[ "${remoteRequests}" != requests:* ]]; then
     cat >&2 <<EOM
 ERROR: Remote server did not send expected "requests:" message.
@@ -120,7 +138,12 @@ EOM
   fi
   remoteRequests=${remoteRequests#requests:}
 
-  read -r -u 3 -t 3 remoteResponses
+  if ! read -r -u 3 -t 3 remoteResponses; then
+    cat >&2 <<EOM
+ERROR: Failed when trying to read remote server "responses:" message.
+EOM
+    exit 1
+  fi
   if [[ "${remoteResponses}" != responses:* ]]; then
     cat >&2 <<EOM
 ERROR: Remote server did not send expected "responses:" message.
